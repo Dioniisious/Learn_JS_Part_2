@@ -110,7 +110,7 @@ filterRangeInPlace(arr_1, 1, 4); // removed the numbers except from 1 to 4
 console.log(arr_1); // [3, 1]
 
 
-// В задаче 3... ЕБЕНЯ ПОЛНЕЙШАЯ!!!
+// В задаче 3...
 
 
 
