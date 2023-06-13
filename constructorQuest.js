@@ -15,7 +15,6 @@
 Если названия нет, в таком случае нужно вернуть объект, который находится в состоянии стройки, он пока не готов.
 */
 
-
 function FactoryBuild(title) {
     if (title === undefined) {
         return {
@@ -37,9 +36,9 @@ function CarrierAssembly(title, purpose) {
     // Доставляет груз из А в Б, ориентируясь по координатам. Вычисляет ~ время доставки
     this.carry = function (start_x, start_y, finish_x, finish_y) {
         console.log(`Starting to move cargo from position: x: ${start_x}; y: ${start_y}.`);
-        let mediunSpeed = 10;
+        let MEDIUMSPEED = 10;
         let wayLength = ((finish_x - start_x) ** 2 + (finish_y - start_y) ** 2) ** 0.5;
-        console.log(`The way will take about ${wayLength / mediunSpeed} seconds.`);
+        console.log(`The way will take about ${wayLength / MEDIUMSPEED} seconds.`);
         console.log(`Finishing to move cargo to position: x: ${finish_x}; y: ${finish_y}.`);
     }
 }
@@ -49,18 +48,24 @@ function MinerAssembly(title, purpose) {
     this.purpose = purpose;
     // Добывает руду до тех пор, пока не наберется требуемое количество руды
     // Учитывается риск поломки инструмента
-    this.drill = function (requiredOre) {
+    this.drill = function (requiredAmountOfOre) {
+        // То, что требуется запускать через setTimeout:
+        let mining = () => Math.random();
         let duringOre = 0;
+        // Запускать этот цикл с определенной периодичностью: т е, каждый цикл бурения будет производиться ровно через секунду
         while (true) {
-            let mined = Math.random();
-            console.log(mined);
-            duringOre += mined;
+            // let getSomeOre = Math.random();
+            let getSomeOre = setTimeout(mining, 1);
+            let destructionRisk = Math.random();
+            console.log(getSomeOre);
+            console.log(destructionRisk);
+            duringOre += getSomeOre;
             console.log(duringOre);
-            if (mined > 0.9) {
+            if (destructionRisk > 0.96) {
                 console.log("Drill arm was destroyed! Repair is required!");
                 return duringOre;
             }
-            if (duringOre > requiredOre) {
+            if (duringOre > requiredAmountOfOre) {
                 console.log("The task is successfully finished!");
                 return duringOre;
             }
@@ -68,16 +73,19 @@ function MinerAssembly(title, purpose) {
     }
 }
 
+// Конструктор зданий и сооружений для робота-строителя:
+function CreateNewBuilding(title, purpose, location, materials) {
+    this.title = title;
+    this.purpose = purpose;
+    this.location = location;
+    this.materials = materials;
+}
+
 function ConstructorAssembly(title, purpose) {
     this.title = title;
     this.purpose = purpose;
     // Создаем новый объект - здание. Учитываем и расположение, и стройматериалы
-    this.Build = function (title, purpose, location, materials) {
-        this.title = title;
-        this.purpose = purpose;
-        this.location = location;
-        this.materials = materials;
-    }
+    this.Build = CreateNewBuilding;
 }
 
 function MeteorologistAssembly(title, purpose) {
@@ -88,9 +96,19 @@ function MeteorologistAssembly(title, purpose) {
         let darknessOfFar = Math.random();
         if (darknessOfFar > 0.9) {
             console.log("Sandstorm will start soon!");
+        } else {
+            console.log("Weather conditions are fine");
         }
     }
+    // Активируем метеорадар. Периодичность анализа погоды - раз в 10 сек:
+    this.startObserve = setInterval(this.observe, 10);
+    // Метеорадар также можно отрубить:
+    this.stopObserve = clearInterval(this.startObserve);
 }
+
+
+
+
 
 // Создадим фабрику "Discoverer"
 const firstFactory = new FactoryBuild("Discoverer");
@@ -105,6 +123,13 @@ FactoryBuild {
   MakeMeteorologist: [Function: MeteorologistAssembly]
 }
 */
+
+// А еще добавим фабрику, которая пока строится:
+const buildingFactory = new FactoryBuild();
+
+// Посмотрим, как выглядит стройка:
+console.log(buildingFactory);
+// { title: 'New factory', status: 'Under construction' }
 
 // Создаем по роботу каждого вида:
 let carrier_bot = new firstFactory.MakeCarrier("Rover", "Deliver cargos");
